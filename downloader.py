@@ -30,7 +30,7 @@ def download(symbol):
     symbol = symbol.upper()
     url = "https://www.alphavantage.co/query?function=RSI&symbol="+symbol+"&interval=5min&time_period=20&series_type=close&apikey="+randomString()+"&datatype=csv&outputsize=full"
     response = rq.get(url).content
-    file = open(os.path.join(symbol, "dset.csv"), "wb")
+    file = open(os.path.join(symbol, "rsi.csv"), "wb")
     file.write(response)
     file.close()
 download("aapl")
