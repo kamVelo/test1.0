@@ -21,16 +21,21 @@ closes = dset["close"]
 closes = sc_x.fit_transform(closes.values.reshape(-1,1))
 x= pd.DataFrame(rsi,columns=["rsi"])
 x["closes"] = closes;
-
-model = KMeans(
-    init="random",
-    n_clusters=5,
-    n_init= 3,
-    max_iter=300,
-    random_state=42
-)
-
-model.fit(x)
-print("SSE: %s" % model.inertia_)
-print("Number of clusters required to converge: %s" % model.n_iter_)
+args = {
+    "init":"random",
+    "n_init":5,
+    "max_iter":300,
+    "random_state":42
+}
+sse = []
+for k in range(1,51):
+    model = KMeans(n_clusters=k, **args)
+    model.fit(x)
+    sse.append(model.inertia_)
+plt.style.use("fivethirtyeight")
+plt.plot(range(1,51), sse)
+plt.xticks(range(1,51))
+plt.xlabel("No. of Clusters")
+plt.ylabel("SSE")
+plt.show()
 
