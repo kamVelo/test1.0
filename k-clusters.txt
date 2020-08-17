@@ -1,0 +1,2 @@
+when running on between 1 and 51 clusters the elbow is 7 versus when running on between 1 and 11 clusters when it is 4.
+contrary, when running the Silhouette coefficient method the optimal coefficient is consistently 2 across ranges.
