@@ -14,7 +14,8 @@ def download(symbol):
     """
     this method downloads all the files necessary for the regression algorithm. 
     """
-    
+    if not os.path.isdir(symbol):
+        os.mkdir(symbol)
     #downloads intraday dataset
     symbol = symbol.upper()
     url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol="+symbol+"&interval=5min&apikey="+randomString()+"&datatype=csv&outputsize=full"
@@ -27,10 +28,9 @@ def download(symbol):
     
     #downloads rsi dataset
     symbol = symbol.upper()
-    url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol="+symbol+"&interval=5min&apikey="+randomString()+"&datatype=csv&outputsize=full"
+    url = "https://www.alphavantage.co/query?function=RSI&symbol="+symbol+"&interval=5min&time_period=20&series_type=close&apikey="+randomString()+"&datatype=csv&outputsize=full"
     response = rq.get(url).content
     file = open(os.path.join(symbol, "dset.csv"), "wb")
     file.write(response)
     file.close()
-
 download("aapl")
