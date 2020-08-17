@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from numpy import where
 import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from kneed import KneeLocator
 from matplotlib import  pyplot
 symbol = "aapl"
 dset = pd.read_csv(os.path.join(symbol, "dset.csv")).iloc[:, 1:].iloc[::-1]
@@ -23,29 +22,28 @@ closes = dset["close"]
 closes = sc_x.fit_transform(closes.values.reshape(-1,1))
 x= pd.DataFrame(rsi,columns=["rsi"])
 x["closes"] = closes;
-args = {
-    "init":"random",
-    "n_init":5,
-    "max_iter":300,
-    "random_state":42
-}
-sse = []
-max_iter = 51
-for k in range(1,max_iter):
-    model = KMeans(n_clusters=k, **args)
-    model.fit(x)
-    sse.append(model.inertia_)
+model = KMeans(init="random", n_clusters=5, n_init=3, max_iter=300, random_state=42)
+model.fit(x)
+x["rsi"] = sc_y.inverse_transform(x["rsi"])
+x["closes"] = sc_x.inverse_transform(x["closes"])
+x["prediction"] = model.labels_
 
-k1 = KneeLocator(range(1, max_iter), sse, curve="convex",direction="decreasing")
-print(k1.elbow)
-silCoefs = []
-for k in range(2,max_iter):
-    model = KMeans(n_clusters=k, **args)
-    model.fit(x)
-    score = silhouette_score(x, model.labels_)
-    silCoefs.append(score)
-    
-bestSilCoef = silCoefs.index(max(silCoefs)) + 2
+blue = [row for index, row in x.iterrows() if row["prediction"] == 0]
+red = [row for index, row in x.iterrows() if row["prediction"] == 1]
+green = [row for index, row in x.iterrows() if row["prediction"] == 2]
+black = [row for index, row in x.iterrows() if row["prediction"] == 3]
+yellow = [row for index, row in x.iterrows() if row["prediction"] == 4]
 
-print("elbow: %s | Silhouette Coefficient: %s" % (k1.elbow, bestSilCoef))
+
+blue,red , green, black, yellow = np.array(blue), np.array(red), np.array(green), np.array(black), np.array(yellow)
+
+plt.scatter(blue[:,1],blue[:,0], c="blue")
+plt.scatter(red[:,1],red[:,0], c="red")
+plt.scatter(green[:,1],green[:,0], c="green")
+plt.scatter(black[:,1],black[:,0], c="black")
+plt.scatter(yellow[:,1],yellow[:,0], c="yellow")
+plt.show()
+
+
+
 
